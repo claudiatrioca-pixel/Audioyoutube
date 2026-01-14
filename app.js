@@ -1,34 +1,49 @@
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>YouTube Audio Player</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+let player;
+let videoId = null;
 
-  <div class="player">
-    <h2>YouTube Audio Player</h2>
+// Extrae el ID desde distintas URLs de YouTube
+function extractVideoId(url) {
+  const regExp =
+    /(?:youtube\.com\/.*v=|youtu\.be\/)([^&]+)/;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
+}
 
-    <input
-      type="text"
-      id="youtubeUrl"
-      placeholder="Pega una URL de YouTube"
-    />
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('yt-player', {
+    height: '1',
+    width: '1',
+    videoId: '',
+    playerVars: {
+      controls: 0,
+      modestbranding: 1
+    }
+  });
+}
 
-    <div class="controls">
-      <button id="load">Cargar</button>
-      <button id="play">▶</button>
-      <button id="pause">⏸</button>
-      <button id="stop">⏹</button>
-    </div>
-  </div>
+// Botones
+document.getElementById('load').onclick = () => {
+  const url = document.getElementById('youtubeUrl').value;
+  const id = extractVideoId(url);
 
-  <!-- Contenedor oculto del player -->
-  <div id="yt-player"></div>
+  if (!id) {
+    alert('URL no válida');
+    return;
+  }
 
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+  videoId = id;
+  player.loadVideoById(videoId);
+};
+
+document.getElementById('play').onclick = () => {
+  player.playVideo();
+};
+
+document.getElementById('pause').onclick = () => {
+  player.pauseVideo();
+};
+
+document.getElementById('stop').onclick = () => {
+  player.stopVideo();
+};
